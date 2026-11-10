@@ -8,6 +8,7 @@ import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
  */
 public class Cannon extends Actor
 {
+    private final static double CANNON_BALL_VELOCITY = 1500;
     /**
      * Act - do whatever the Cannon wants to do. This method is called whenever
      * the 'Act' or 'Run' button gets pressed in the environment.
@@ -17,16 +18,31 @@ public class Cannon extends Actor
         MouseInfo mouse = Greenfoot.getMouseInfo();
         if (mouse != null )
         {
-           Vector2D cannonToMouse = new Vector2D(mouse.getX()-getX(), mouse.getY()- getY());
-           
-           double adjacent = cannonToMouse.getX();
-           double opposite = cannonToMouse.getY();
-           
-           double angleRadians = Math.atan2(opposite,adjacent);
-           double angleDegrees = Math.toDegrees(angleRadians);
-           
-           setRotation((int) angleDegrees);
+            Vector2D cannonToMouse = new Vector2D(mouse.getX()-getX(), mouse.getY()- getY());
+            alignWithVector(cannonToMouse);
+            
+            if (Greenfoot.mouseClicked(null))
+            {
+                cannonToMouse.normalize(); // 
+                cannonToMouse = Vector2D.multiply(cannonToMouse,CANNON_BALL_VELOCITY);
+                
+                CannonBall ball = new CannonBall();
+                ball.setVelocity(cannonToMouse);
+                getWorld().addObject(ball, getX(), getY());
+                Greenfoot.playSound("cannonSound.wav");
+            }
         }
-        
+
+    }
+
+    public void alignWithVector( Vector2D cannonToMouse)
+    {
+        double adjacent = cannonToMouse.getX();
+        double opposite = cannonToMouse.getY();
+
+        double angleRadians = Math.atan2(opposite,adjacent);
+        double angleDegrees = Math.toDegrees(angleRadians);
+
+        setRotation((int) angleDegrees);
     }
 }
